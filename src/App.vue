@@ -2,7 +2,24 @@
   <v-app>
     <v-main>
       <HeaderArea/>
-      <SizeFields/>
+      <v-row class="gap-2 pr-4 pl-4 mt-4">
+        <v-col>
+          <SizeFields
+          label="Länge der Arena"
+          />
+          <SizeFields
+          label="Länge eines Feldes"
+          />
+        </v-col>
+        <v-col>
+          <SizeFields
+          label="Breiter der Arena"
+          />
+          <SizeFields
+          label="Breite eines Feldes"
+          />
+        </v-col>
+      </v-row>
       <v-btn
         class="m-2"
         icon="mdi-theme-light-dark"

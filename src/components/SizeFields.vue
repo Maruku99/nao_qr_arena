@@ -1,27 +1,23 @@
 <template>
-  <v-responsive class="m-4">
-    <v-row>
+  <v-responsive>
         <v-number-input
         :reverse="false"
         controlVariant="split"
-        label="Länge Arena"
+        :label="props.label"
         :hideInput="false"
         :inset="false"
-        min="1"
+        :min="1"
         ></v-number-input>
-        <v-number-input
-        :reverse="false"
-        controlVariant="split"
-        label="Breite Arena"
-        :hideInput="false"
-        :inset="false"
-        min="1"
-        ></v-number-input>
-    </v-row>
   </v-responsive>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-const labelText = ref();
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    label: string
+  }>(),
+  {
+    label: "label"
+  }
+)
 </script>
