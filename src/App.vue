@@ -27,6 +27,5 @@
 <script lang="ts" setup>
 import HeaderArea from "@/components/HeaderArea.vue";
 import SizeFields from "./components/SizeFields.vue";
-import GridField from "./components/GridField.vue";
 import ArenaGrid from "./components/ArenaGrid.vue";
 </script>
