@@ -1,15 +1,24 @@
 <template>
-  <v-item-group multiple>
-    <v-item v-slot="{ isSelected, toggle }">
-      <v-card
-        :color="isSelected ? 'bg-red-300' : ''"
-        height="50"
-        width="50"
-        @click="toggle"
-      >
-      </v-card>
-    </v-item>
-  </v-item-group>
+  <v-stage :config="stageSize">
+    <v-layer>
+      <v-rect :config="rectConfig" />
+    </v-layer>
+  </v-stage>
 </template>
+<script setup lang="ts">
+import { Stage as VStage, Layer as VLayer, Rect as VRect } from "vue-konva";
 
-<script setup lang="ts"></script>
+const stageSize = {
+  width: 200,
+  height: 200,
+};
+
+const rectConfig = {
+  x: 20,
+  y: 50,
+  width: 100,
+  height: 100,
+  fill: "red",
+  shadowBlur: 10,
+};
+</script>
