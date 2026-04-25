@@ -12,10 +12,10 @@
         Wenn der Nutzer die Zahl ändert, wird gridLength hier aktualisiert.
         Das löst automatisch eine Neuberechnung von rectsCanvas aus (computed).
       -->
-      <SizeFields v-model="gridLength" label="Länge der Arena" />
+      <ArenaSize v-model="gridLength" label="Länge der Arena" />
     </v-col>
     <v-col>
-      <SizeFields v-model="gridWidth" label="Breiter der Arena" />
+      <ArenaSize v-model="gridWidth" label="Breiter der Arena" />
     </v-col>
   </v-row>
 
@@ -27,7 +27,6 @@
     pa-4          → padding rundherum
   -->
   <div class="d-flex justify-center align-center pa-4">
-
     <!--
       Scrollbares Fenster:
       - Feste Größe (400×400px) damit es nicht endlos wächst
@@ -40,12 +39,11 @@
         width: 400px;
         height: 400px;
         overflow: auto;
-        border: 1px solid rgba(128,128,128,0.3);
+        border: 1px solid rgba(128, 128, 128, 0.3);
         margin: 16px auto;
         background-color: gray;
       "
     >
-
       <!--
         Das eigentliche Grid:
         display: grid → CSS Grid Layout
@@ -69,7 +67,6 @@
           width: fit-content;
         `"
       >
-
         <!--
           v-for: iteriert über rectsCanvas (computed Array).
           Für jede Zelle wird eine v-stage gerendert.
@@ -107,7 +104,6 @@
             <v-rect :config="rectCanvas.rect" />
           </v-layer>
         </v-stage>
-
       </div>
     </div>
   </div>
@@ -151,12 +147,15 @@
     @click="colorPickerOpen = false"
   />
 </template>
-
+<!--
+#MARK: Script:
+ -->
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import type { KonvaEventObject } from "konva/lib/Node";
 import { Stage as VStage, Layer as VLayer, Rect as VRect } from "vue-konva";
-import SizeFields from "./SizeFields.vue";
+import { useArenaStore } from '@/stores/useArenaStore'
+import ArenaSize from "./ArenaSize.vue";
 
 /*
   stageSize: feste Größe jeder einzelnen Zelle in Pixeln.
@@ -173,8 +172,7 @@ const stageSize = {
   gridLength = Anzahl der Zeilen (nach unten)
   gridWidth  = Anzahl der Spalten (nach rechts)
 */
-const gridLength = ref(1);
-const gridWidth = ref(1);
+const { gridLength, gridWidth } = useArenaStore()
 
 // Steuert ob der ColorPicker sichtbar ist
 const colorPickerOpen = ref(false);
@@ -286,6 +284,6 @@ const rectsCanvas = computed(() =>
       fill: cellColors.value.get(index) ?? "#cccccc",
       shadowBlur: 10,
     },
-  }))
+  })),
 );
 </script>
