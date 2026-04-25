@@ -88,7 +88,9 @@
           :key="rectCanvas.id"
           :config="rectCanvas.stage"
           @click="openColorPicker(rectCanvas.id, $event)"
+          @tap="openColorPicker(rectCanvas.id, $event)"
           @dblclick="setDefaultColor(rectCanvas.id, $event)"
+          @dbltap="setDefaultColor(rectCanvas.id, $event)"
         >
           <!--
             v-layer: Konva-Layer, nötig als Zwischenschicht zwischen
@@ -185,6 +187,10 @@ const activeColor = ref("#FF0000");
 const pickerX = ref(0);
 const pickerY = ref(0);
 
+const PICKER_MARGIN = 8;
+const PICKER_WIDTH = 320;
+const PICKER_HEIGHT = 420;
+
 // Welche Zelle gerade zum Färben ausgewählt ist
 const selectedCellId = ref<number | null>(null);
 
@@ -197,6 +203,38 @@ const selectedCellId = ref<number | null>(null);
 */
 let clickTimer: ReturnType<typeof setTimeout> | null = null;
 
+function clearClickTimer() {
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+  }
+}
+
+function getEventClientPosition(
+  event: MouseEvent | TouchEvent | PointerEvent,
+) {
+  if ("clientX" in event && "clientY" in event) {
+    return { x: event.clientX, y: event.clientY };
+  }
+
+  const touchPoint = event.touches?.[0] ?? event.changedTouches?.[0];
+  if (touchPoint) {
+    return { x: touchPoint.clientX, y: touchPoint.clientY };
+  }
+
+  return { x: 0, y: 0 };
+}
+
+function clampPickerPosition(x: number, y: number) {
+  const maxX = Math.max(PICKER_MARGIN, window.innerWidth - PICKER_WIDTH - PICKER_MARGIN);
+  const maxY = Math.max(PICKER_MARGIN, window.innerHeight - PICKER_HEIGHT - PICKER_MARGIN);
+
+  return {
+    x: Math.min(Math.max(x, PICKER_MARGIN), maxX),
+    y: Math.min(Math.max(y, PICKER_MARGIN), maxY),
+  };
+}
+
 /*
   openColorPicker: wird bei Einfachklick auf eine Zelle aufgerufen.
 
@@ -204,7 +242,15 @@ let clickTimer: ReturnType<typeof setTimeout> | null = null;
   .evt → das rohe Browser-MouseEvent (mit clientX/Y)
   Direkt event.clientX würde nicht funktionieren da Konva das Event wrапpt!
 */
-function openColorPicker(id: number, event: KonvaEventObject<MouseEvent>) {
+function openColorPicker(
+  id: number,
+  event: KonvaEventObject<MouseEvent | TouchEvent | PointerEvent>,
+) {
+  // Mehrfaches click/tap schnell hintereinander darf nur einen Timer haben.
+  clearClickTimer();
+
+  const position = getEventClientPosition(event.evt);
+
   clickTimer = setTimeout(() => {
     selectedCellId.value = id;
 
@@ -212,10 +258,11 @@ function openColorPicker(id: number, event: KonvaEventObject<MouseEvent>) {
     activeColor.value = cellColors.value.get(id) ?? "#FF0000";
 
     // Picker direkt an der Mausposition öffnen
-    pickerX.value = event.evt.clientX;
-    pickerY.value = event.evt.clientY / 2; // /2 wegen Layout-Offset
+    const clampedPosition = clampPickerPosition(position.x, position.y);
+    pickerX.value = clampedPosition.x;
+    pickerY.value = clampedPosition.y;
     colorPickerOpen.value = true;
-  }, 200); // 200ms warten → gibt Doppelklick Zeit den Timer abzubrechen
+  }, 250); // 250ms warten → gibt Doppel-Event Zeit den Timer abzubrechen
 }
 
 /*
@@ -229,8 +276,11 @@ function openColorPicker(id: number, event: KonvaEventObject<MouseEvent>) {
   Nötig weil Vue Änderungen INNERHALB einer Map/Set nicht automatisch erkennt!
   Eine neue Instanz zuzuweisen triggert die Reaktivität.
 */
-function setDefaultColor(id: number, event: KonvaEventObject<MouseEvent>) {
-  if (clickTimer) clearTimeout(clickTimer);
+function setDefaultColor(
+  id: number,
+  event: KonvaEventObject<MouseEvent | TouchEvent | PointerEvent>,
+) {
+  clearClickTimer();
   cellColors.value.delete(id);
   cellColors.value = new Map(cellColors.value); // Reaktivität triggern
   colorPickerOpen.value = false;
@@ -291,7 +341,7 @@ const rectsCanvas = computed(() =>
         verticalAlign: "middle",
         fontSize: 12,
         fontStyle: "bold",
-        fill: "#00000",
+        fill: "#000000",
         listening: false,
       },
     };
