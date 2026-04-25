@@ -11,7 +11,7 @@ import { useArenaStore } from "@/stores/useArenaStore";
 import { useQRCode } from "@vueuse/integrations/useQRCode";
 import { computed, ref } from "vue";
 
-const { gridLength, gridWidth, fieldLength, fieldWidth } = useArenaStore();
+const { gridLength, gridWidth, fieldLength, fieldWidth, cellColors } = useArenaStore();
 
 const showQr = ref(false)
 
@@ -21,6 +21,7 @@ const qrValues = computed(() =>
     gridWidth: gridWidth.value,
     fieldLength: fieldLength.value,
     fieldWidth: fieldWidth.value,
+    cellColors: cellColors.value
   })
 );
 
