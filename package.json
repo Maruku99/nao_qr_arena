@@ -14,7 +14,9 @@
     "@fontsource/roboto": "^5.2.10",
     "@fontsource/roboto-mono": "^5.2.8",
     "@mdi/font": "7.4.47",
+    "@vueuse/integrations": "^14.2.1",
     "konva": "^10.2.5",
+    "qrcode": "^1.5.4",
     "vue": "^3.5.30",
     "vue-konva": "^3.4.0",
     "vuetify": "^4.0.2"
