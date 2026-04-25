@@ -102,6 +102,7 @@
               fill kommt aus cellColors Map → ändert sich per Klick
             -->
             <v-rect :config="rectCanvas.rect" />
+            <v-text :config="rectCanvas.label" />
           </v-layer>
         </v-stage>
       </div>
@@ -153,7 +154,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import type { KonvaEventObject } from "konva/lib/Node";
-import { Stage as VStage, Layer as VLayer, Rect as VRect } from "vue-konva";
+import { Stage as VStage, Layer as VLayer, Rect as VRect, Text as VText } from "vue-konva";
 import { useArenaStore } from '@/stores/useArenaStore'
 import ArenaSize from "./ArenaSize.vue";
 
@@ -266,17 +267,34 @@ function applyColor() {
     ?? = Nullish Coalescing Operator (wie || aber nur für null/undefined)
 */
 const rectsCanvas = computed(() =>
-  Array.from({ length: gridWidth.value * gridLength.value }, (_, index) => ({
-    id: index,
-    stage: { width: stageSize.width, height: stageSize.height },
-    rect: {
-      x: 0,
-      y: 0,
-      width: stageSize.width,
-      height: stageSize.height,
-      fill: cellColors.value.get(index) ?? "#cccccc",
-      shadowBlur: 10,
-    },
-  })),
+  Array.from({ length: gridWidth.value * gridLength.value }, (_, index) => {
+    const fillColor = cellColors.value.get(index) ?? "#cccccc";
+
+    return {
+      id: index,
+      stage: { width: stageSize.width, height: stageSize.height },
+      rect: {
+        x: 0,
+        y: 0,
+        width: stageSize.width,
+        height: stageSize.height,
+        fill: fillColor,
+        shadowBlur: 10,
+      },
+      label: {
+        x: 0,
+        y: 0,
+        width: stageSize.width,
+        height: stageSize.height,
+        text: String(index),
+        align: "center",
+        verticalAlign: "middle",
+        fontSize: 12,
+        fontStyle: "bold",
+        fill: "#00000",
+        listening: false,
+      },
+    };
+  }),
 );
 </script>
