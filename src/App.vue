@@ -1,16 +1,10 @@
 <template>
   <v-app>
     <v-main>
-      <HeaderArea />
-      <v-row class="gap-2 pr-4 pl-4 mt-4">
-        <v-col>
-          <SizeFields label="Länge eines Feldes" />
-        </v-col>
-        <v-col>
-          <SizeFields label="Breite eines Feldes" />
-        </v-col>
-      </v-row>
-      <ArenaGrid/>
+      <ArenaHeader />
+      <ArenaFieldSize/>
+      <ArenaGrid />
+      <QrButton />
       <v-btn
         class="m-2"
         icon="mdi-theme-light-dark"
@@ -23,7 +17,8 @@
 </template>
 
 <script lang="ts" setup>
-import HeaderArea from "@/components/HeaderArea.vue";
-import SizeFields from "./components/SizeFields.vue";
+import ArenaHeader from "./components/ArenaHeader.vue";
 import ArenaGrid from "./components/ArenaGrid.vue";
+import ArenaFieldSize from "./components/ArenaFieldSize.vue";
+import QrButton from "./components/QrButton.vue";
 </script>
