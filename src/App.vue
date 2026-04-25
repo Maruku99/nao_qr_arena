@@ -6,7 +6,8 @@
       <ArenaGrid />
       <QrButton />
       <v-btn
-        class="m-2"
+        class="m-1"
+        size="small"
         icon="mdi-theme-light-dark"
         location="top right"
         position="absolute"
