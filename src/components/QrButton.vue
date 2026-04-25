@@ -21,7 +21,9 @@ const qrValues = computed(() =>
     gridWidth: gridWidth.value,
     fieldLength: fieldLength.value,
     fieldWidth: fieldWidth.value,
-    cellColors: cellColors.value
+    // Map kann nicht direkt korrekt in JSON serialisiert werden.
+    // Wir wandeln deshalb in ein plain Object mit Zell-ID als Key um.
+    cellColors: Object.fromEntries(cellColors.value)
   })
 );
 
