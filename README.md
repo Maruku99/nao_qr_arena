@@ -1,75 +1,98 @@
 # nao_qr_arena
 
-Scaffolded with Vuetify CLI.
+Web-App zum Erstellen eines Arena-Rasters für NAO und zum Export der Konfiguration als QR-Code.
 
-## ❗️ Documentation
+## Features
 
-- Primary docs: https://vuetifyjs.com/
-- Getting started guide: https://vuetifyjs.com/en/getting-started/installation/
-- Community support: https://community.vuetifyjs.com/
-- Issue tracker: https://issues.vuetifyjs.com/
+- Frei einstellbare Arena-Größe (Zeilen x Spalten)
+- Feldmaße in cm (Länge/Breite pro Feld)
+- Farbzuweisung pro Zelle
+- Zell-IDs direkt im Raster zur Kontrolle
+- QR-Code-Export der aktuellen Konfiguration
+- Unterstützung für Desktop und Mobile (Click/Tap und Double-Click/Double-Tap)
 
-## 🧱 Stack
+## Screenshots
 
-- Framework: Vue 3 + Vite
-- UI Library: Vuetify
-- Language: TypeScript
-- Package manager: npm
+### Overlay
 
-## 🧭 Start Here
+![Overlay Ansicht](public/overlay.png)
 
-- Main entry: `src/main.ts`
-- Main app component: `src/App.vue`
-- Main styles: `src/styles/`
-- Plugin setup: `src/plugins/`
+### QR-Code
 
-## 📁 Project Structure
+![QR-Code Beispiel](public/qrCode.png)
 
-- `src/main.ts` — application entry point
-- `src/App.vue` — root component
-- `src/components/` — reusable Vue components
-- `src/plugins/` — plugin registration and setup
-- `src/styles/` — global styles and theme settings
-- `public/` — static public files
+## Technologie
 
-## ✨ Enabled Features
+- Vue 3
+- Vite
+- TypeScript
+- Vuetify 4
+- vue-konva / Konva
+- @vueuse/integrations (useQRCode)
 
-- Tailwind CSS
+## Voraussetzungen
 
-## 💿 Install
+- Node.js 20+ (empfohlen)
+- npm
 
-Use your selected package manager (npm) to install dependencies:
+## Installation
 
 ```bash
 npm install
 ```
 
-## 🚀 Quick Start
+## Entwicklung starten
 
 ```bash
-npm install
 npm run dev
 ```
 
-## 🏗️ Build
+Der Dev-Server läuft mit Host-Freigabe, sodass Tests im lokalen Netzwerk (z. B. am Handy) möglich sind.
+
+## Build
 
 ```bash
 npm run build
 ```
 
-## 🧪 Available Scripts
+## Vorschau des Builds
 
-- `npm run dev`
-- `npm run build`
-- `npm run preview`
-- `npm run build-only`
-- `npm run type-check`
+```bash
+npm run preview
+```
 
-## 💪 Support Vuetify Development
+## Type-Check
 
-This project uses Vuetify - an MIT licensed Open Source project. We are glad to welcome contributors and any support for ongoing development:
+```bash
+npm run type-check
+```
 
-- Contribute to Vuetify and ecosystem projects: https://github.com/vuetifyjs
-- Request enterprise support: https://support.vuetifyjs.com/
-- Sponsor on GitHub: https://github.com/sponsors/vuetifyjs
-- Support on Open Collective: https://opencollective.com/vuetify
+## Bedienung
+
+1. Feldgröße (cm) in den Eingabefeldern setzen.
+2. Rastergröße (Länge/Breite) festlegen.
+3. Zelle anklicken oder antippen, Farbe im Picker wählen.
+4. Zelle doppelklicken oder doppeltippen, um die Farbe zurückzusetzen.
+5. "QR-Code generieren" klicken, um die Konfiguration als QR-Code anzuzeigen.
+
+## QR-Payload
+
+Der QR-Code enthält die Arena-Daten als JSON mit:
+
+- gridLength
+- gridWidth
+- fieldLength
+- fieldWidth
+- cellColors (als Objekt mit Zell-ID als Key)
+
+## Projektstruktur
+
+- src/App.vue: Hauptlayout und Theme-Toggle
+- src/components/ArenaGrid.vue: Raster, Zellfarben, Picker-Interaktion
+- src/components/ArenaFieldSize.vue: Feldmaße pro Zelle
+- src/components/QrButton.vue: QR-Code-Erzeugung und Dialog
+- src/stores/useArenaStore.ts: Gemeinsamer State (Größe, Maße, Farben)
+
+## Hinweise
+
+- Vuetify Utilities sind aktuell deaktiviert. Layouts sollten daher nicht von Utility-Klassen abhängen, wenn zwingendes Verhalten erwartet wird.
