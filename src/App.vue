@@ -10,8 +10,7 @@
           <SizeFields label="Breite eines Feldes" />
         </v-col>
       </v-row>
-      <!-- <ArenaGrid /> -->
-      <DevComponent/>
+      <ArenaGrid/>
       <v-btn
         class="m-2"
         icon="mdi-theme-light-dark"
@@ -27,5 +26,4 @@
 import HeaderArea from "@/components/HeaderArea.vue";
 import SizeFields from "./components/SizeFields.vue";
 import ArenaGrid from "./components/ArenaGrid.vue";
-import DevComponent from "./components/DevComponent.vue";
 </script>
