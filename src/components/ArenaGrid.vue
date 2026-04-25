@@ -172,7 +172,7 @@ const stageSize = {
   gridLength = Anzahl der Zeilen (nach unten)
   gridWidth  = Anzahl der Spalten (nach rechts)
 */
-const { gridLength, gridWidth } = useArenaStore()
+const { gridLength, gridWidth, cellColors } = useArenaStore()
 
 // Steuert ob der ColorPicker sichtbar ist
 const colorPickerOpen = ref(false);
@@ -186,13 +186,6 @@ const pickerY = ref(0);
 
 // Welche Zelle gerade zum Färben ausgewählt ist
 const selectedCellId = ref<number | null>(null);
-
-/*
-  Map<number, string>: speichert pro Zell-ID eine Farbe.
-  Beispiel: { 0 → "#FF0000", 5 → "#00FF00" }
-  Zellen die nicht in der Map sind bekommen die Standardfarbe (#cccccc).
-*/
-const cellColors = ref(new Map<number, string>());
 
 /*
   clickTimer: wird gebraucht um Einfach- und Doppelklick zu trennen.
