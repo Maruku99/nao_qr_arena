@@ -76,8 +76,7 @@ function buildByteArray(): Uint8Array {
 // NAO-Seite: import base64; data = base64.b64decode(qr_string)
 const qrValues = computed(() => {
   const bytes  = buildByteArray()
-  const binary = Array.from(bytes, b => String.fromCharCode(b)).join('')
-  return btoa(binary) // Base64-String
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
 })
 
 const qrcode = useQRCode(qrValues)
