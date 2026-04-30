@@ -32,26 +32,53 @@
 </template>
 
 <script setup lang="ts">
-import { useArenaStore } from "@/stores/useArenaStore";
-import { useQRCode } from "@vueuse/integrations/useQRCode";
-import { computed, ref } from "vue";
+import { useArenaStore } from "@/stores/useArenaStore"
+import { useQRCode } from "@vueuse/integrations/useQRCode"
+import { computed, ref } from "vue"
 
-const { gridLength, gridWidth, fieldLength, fieldWidth, cellColors } =
-  useArenaStore();
+const { gridLength, gridWidth, fieldLength, fieldWidth, cellColors } = useArenaStore()
+const showQr = ref(false)
 
-const showQr = ref(false);
+function buildByteArray(): Uint8Array {
+  const flBytes = new TextEncoder().encode(fieldLength.value)
+  const fwBytes = new TextEncoder().encode(fieldWidth.value)
+  const cells = Array.from(cellColors.value.entries())
 
-const qrValues = computed(() =>
-  JSON.stringify({
-    gridLength: gridLength.value,
-    gridWidth: gridWidth.value,
-    fieldLength: fieldLength.value,
-    fieldWidth: fieldWidth.value,
-    // Map kann nicht direkt korrekt in JSON serialisiert werden.
-    // Wir wandeln deshalb in ein plain Object mit Zell-ID als Key um.
-    cellColors: Object.fromEntries(cellColors.value),
-  }),
-);
+  // Format:
+  // [0]      gridLength      uint8
+  // [1]      gridWidth       uint8
+  // [2]      len(fieldLength) uint8
+  // [3..N]   fieldLength     UTF-8
+  // [N+1]    len(fieldWidth)  uint8
+  // [N+2..M] fieldWidth      UTF-8
+  // [M+1]    Anzahl Zellen   uint8
+  // [M+2..]  pairs [cellId, colorIdx] je 2 Byte
 
-const qrcode = useQRCode(qrValues);
+  const size = 1 + 1 + 1 + flBytes.length + 1 + fwBytes.length + 1 + cells.length * 2
+  const buf  = new Uint8Array(size)
+  let i = 0
+
+  buf[i++] = gridLength.value
+  buf[i++] = gridWidth.value
+  buf[i++] = flBytes.length
+  buf.set(flBytes, i);  i += flBytes.length
+  buf[i++] = fwBytes.length
+  buf.set(fwBytes, i);  i += fwBytes.length
+  buf[i++] = cells.length
+  for (const [cellId, colorIdx] of cells) {
+    buf[i++] = cellId
+    buf[i++] = colorIdx
+  }
+  return buf
+}
+
+// useQRCode braucht einen String → Base64 ist sauberste Option
+// NAO-Seite: import base64; data = base64.b64decode(qr_string)
+const qrValues = computed(() => {
+  const bytes  = buildByteArray()
+  const binary = Array.from(bytes, b => String.fromCharCode(b)).join('')
+  return btoa(binary) // Base64-String
+})
+
+const qrcode = useQRCode(qrValues)
 </script>
