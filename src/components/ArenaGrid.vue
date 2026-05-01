@@ -3,11 +3,24 @@
     <v-col>
       <ArenaSize v-model="gridLength" label="Länge der Arena" />
     </v-col>
+    <v-col> <ArenaSize v-model="gridWidth" label="Breiter der Arena" /> </v-col>
+  </v-row>
+  <v-row class="gap-2 pr-4 pl-4 mt-4">
     <v-col>
-      <ArenaSize v-model="gridWidth" label="Breiter der Arena" />
+      <ArenaSize v-model="fieldLength" label="Länge eines Feldes" />
+    </v-col>
+    <v-col>
+      <ArenaSize v-model="fieldWidth" label="Breiter eines Feldes" />
     </v-col>
   </v-row>
-
+  <v-row class="gap-2 pr-4 pl-4 mt-4">
+    <v-col>
+      <ArenaSize v-model="startId" label="Start id" />
+    </v-col>
+    <v-col>
+      <ArenaSize v-model="finishId" label="Ziel id" />
+    </v-col>
+  </v-row>
   <div class="d-flex justify-center align-center pa-4">
     <div
       style="
@@ -97,17 +110,16 @@ import {
   Text as VText,
 } from "vue-konva";
 import { useArenaStore } from "@/stores/useArenaStore";
-import ArenaSize from "./ArenaSize.vue";
+import ArenaSize from "./NumberInput.vue";
 
 const stageSize = {
   width: 50,
   height: 50,
 };
 
-const { gridLength, gridWidth, cellColors, COLOR_LUT } = useArenaStore();
+const { gridLength, gridWidth, cellColors, fieldLength, fieldWidth, startId, finishId, COLOR_LUT } = useArenaStore();
 
 const colorPickerOpen = ref(false);
-
 const activeColorIdx = ref<number>(0);
 
 const pickerX = ref(0);

@@ -1,12 +1,13 @@
 import { ref } from 'vue'
 
-// ✅ Außerhalb von defineComponent → wird nur EINMAL erstellt
-//    und von allen Komponenten geteilt
 const gridLength = ref(1)
 const gridWidth = ref(1)
 
-const fieldLength = ref("")
-const fieldWidth = ref("")
+const fieldLength = ref(1)
+const fieldWidth = ref(1)
+
+const startId = ref(0)
+const finishId = ref(0)
 
 const COLOR_LUT = [
   { idx: 0, name: 'Rot',     hex: '#FF0000' },
@@ -24,5 +25,5 @@ const COLOR_LUT = [
 const cellColors = ref(new Map<number, number>())
 
 export function useArenaStore() {
-  return { gridLength, gridWidth, fieldLength, fieldWidth, cellColors, COLOR_LUT }
+  return { gridLength, gridWidth, fieldLength, fieldWidth, startId, finishId, cellColors, COLOR_LUT }
 }

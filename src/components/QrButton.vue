@@ -32,52 +32,63 @@
 </template>
 
 <script setup lang="ts">
-import { useArenaStore } from "@/stores/useArenaStore"
-import { useQRCode } from "@vueuse/integrations/useQRCode"
-import { computed, ref } from "vue"
+import { useArenaStore } from "@/stores/useArenaStore";
+import { useQRCode } from "@vueuse/integrations/useQRCode";
+import { computed, ref } from "vue";
 
-const { gridLength, gridWidth, fieldLength, fieldWidth, cellColors } = useArenaStore()
-const showQr = ref(false)
+const {
+  gridLength,
+  gridWidth,
+  fieldLength,
+  fieldWidth,
+  startId,
+  finishId,
+  cellColors,
+} = useArenaStore();
+
+const showQr = ref(false);
 
 function buildByteArray(): Uint8Array {
-  const flBytes = new TextEncoder().encode(fieldLength.value)
-  const fwBytes = new TextEncoder().encode(fieldWidth.value)
-  const cells = Array.from(cellColors.value.entries())
+  const cells = Array.from(cellColors.value.entries());
+  const values = [
+    gridLength.value,
+    gridWidth.value,
+    fieldLength.value,
+    fieldWidth.value,
+    startId.value,
+    finishId.value,
+  ];
 
-  // Format:
-  // [0]      gridLength      uint8
-  // [1]      gridWidth       uint8
-  // [2]      len(fieldLength) uint8
-  // [3..N]   fieldLength     UTF-8
-  // [N+1]    len(fieldWidth)  uint8
-  // [N+2..M] fieldWidth      UTF-8
-  // [M+1]    Anzahl Zellen   uint8
-  // [M+2..]  pairs [cellId, colorIdx] je 2 Byte
+  const size = values.length + 1 + cells.length * 2; // +1 für cells.length Byte
+  const buf = new Uint8Array(size);
 
-  const size = 1 + 1 + 1 + flBytes.length + 1 + fwBytes.length + 1 + cells.length * 2
-  const buf  = new Uint8Array(size)
-  let i = 0
-
-  buf[i++] = gridLength.value
-  buf[i++] = gridWidth.value
-  buf[i++] = flBytes.length
-  buf.set(flBytes, i);  i += flBytes.length
-  buf[i++] = fwBytes.length
-  buf.set(fwBytes, i);  i += fwBytes.length
-  buf[i++] = cells.length
-  for (const [cellId, colorIdx] of cells) {
-    buf[i++] = cellId
-    buf[i++] = colorIdx
+  // Values schreiben (Index 0 bis values.length-1)
+  for (let index = 0; index < values.length; index++) {
+    buf[index] = values[index];
   }
-  return buf
+
+  // Anzahl Zellen direkt nach den values
+  let i = values.length;
+  buf[i++] = cells.length;
+
+  // Zell-Paare
+  for (const [cellId, colorIdx] of cells) {
+    buf[i++] = cellId;
+    buf[i++] = colorIdx;
+  }
+
+  return buf;
 }
 
-// useQRCode braucht einen String → Base64 ist sauberste Option
-// NAO-Seite: import base64; data = base64.b64decode(qr_string)
+// const qrValues = computed(() => {
+//   const bytes = buildByteArray();
+//   return bytes.toString();
+// });
+
 const qrValues = computed(() => {
-  const bytes  = buildByteArray()
+  const bytes = buildByteArray()
   return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
 })
 
-const qrcode = useQRCode(qrValues)
+const qrcode = useQRCode(qrValues);
 </script>

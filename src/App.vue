@@ -1,8 +1,9 @@
 <template>
   <v-app>
     <v-main>
-      <ArenaHeader />
-      <ArenaFieldSize/>
+      <div class="mt-4">
+        <h1 class="text-center">Nao Arena QR-Code Generator</h1>
+      </div>
       <ArenaGrid />
       <QrButton />
       <v-btn
@@ -18,8 +19,6 @@
 </template>
 
 <script lang="ts" setup>
-import ArenaHeader from "./components/ArenaHeader.vue";
 import ArenaGrid from "./components/ArenaGrid.vue";
-import ArenaFieldSize from "./components/ArenaFieldSize.vue";
 import QrButton from "./components/QrButton.vue";
 </script>
