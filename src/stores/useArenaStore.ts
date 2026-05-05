@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const gridLength = ref(1)
 const gridWidth = ref(1)
@@ -22,7 +22,21 @@ const COLOR_LUT = [
   { idx: 9, name: 'Lila',    hex: '#8000FF' },
 ]
 
-const cellColors = ref(new Map<number, number>())
+const DEFAULT_COLOR_IDX = -1
+const cellColors = ref<number[]>([])
+
+function resizeCellColors(size: number) {
+  const next = cellColors.value.slice(0, size)
+  while (next.length < size) {
+    next.push(DEFAULT_COLOR_IDX)
+  }
+  cellColors.value = next
+}
+
+watch([gridLength, gridWidth], ([length, width]) => {
+  const size = Math.max(0, length * width)
+  resizeCellColors(size)
+}, { immediate: true })
 
 export function useArenaStore() {
   return { gridLength, gridWidth, fieldLength, fieldWidth, startId, finishId, cellColors, COLOR_LUT }
