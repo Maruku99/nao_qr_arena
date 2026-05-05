@@ -42,7 +42,8 @@ export function useColorPicker() {
     const pos = getEventClientPosition(event.evt);
     clickTimer = setTimeout(() => {
       selectedCellId.value = id;
-      activeColorIdx.value = cellColors.value.get(id) ?? 0;
+      const storedIdx = cellColors.value[id] ?? -1;
+      activeColorIdx.value = storedIdx >= 0 ? storedIdx : 0;
       const clamped = clampPickerPosition(pos.x, pos.y);
       pickerX.value = clamped.x;
       pickerY.value = clamped.y;
@@ -52,15 +53,17 @@ export function useColorPicker() {
 
   function setDefaultColor(id: number, _event: KonvaEventObject<MouseEvent | TouchEvent | PointerEvent>) {
     clearClickTimer();
-    cellColors.value.delete(id);
-    cellColors.value = new Map(cellColors.value);
+    cellColors.value[id] = -1;
+    cellColors.value = [...cellColors.value];
     colorPickerOpen.value = false;
   }
 
   function applyColor(idx: number) {
     if (selectedCellId.value !== null) {
-      cellColors.value.set(selectedCellId.value, idx);
-      cellColors.value = new Map(cellColors.value);
+      if (COLOR_LUT[idx]) {
+        cellColors.value[selectedCellId.value] = idx;
+        cellColors.value = [...cellColors.value];
+      }
     }
     colorPickerOpen.value = false;
   }
