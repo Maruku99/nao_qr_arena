@@ -44,12 +44,28 @@ const {
   startId,
   finishId,
   cellColors,
+  COLOR_LUT,
 } = useArenaStore();
 
 const showQr = ref(false);
 
+function hexToRgbBytes(hex: string): [number, number, number] {
+  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
+  if (clean.length !== 6) return [0, 0, 0];
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return [r, g, b];
+}
+
 function buildByteArray(): Uint8Array {
-  const cells = Array.from(cellColors.value.entries());
+  const cells: Array<[number, number]> = [];
+  for (let id = 0; id < cellColors.value.length; id++) {
+    const idx = cellColors.value[id];
+    if (idx !== undefined && idx >= 0) {
+      cells.push([id, idx]);
+    }
+  }
   const values = [
     gridLength.value,
     gridWidth.value,
@@ -59,7 +75,7 @@ function buildByteArray(): Uint8Array {
     finishId.value,
   ];
 
-  const size = values.length + 1 + cells.length * 2; // +1 für cells.length Byte
+  const size = values.length + 1 + cells.length * 4; // +1 für cells.length Byte
   const buf = new Uint8Array(size);
 
   // Values schreiben (Index 0 bis values.length-1)
@@ -74,7 +90,11 @@ function buildByteArray(): Uint8Array {
   // Zell-Paare
   for (const [cellId, colorIdx] of cells) {
     buf[i++] = cellId;
-    buf[i++] = colorIdx;
+    const colorHex = COLOR_LUT[colorIdx]?.hex ?? "#000000";
+    const [r, g, b] = hexToRgbBytes(colorHex);
+    buf[i++] = r;
+    buf[i++] = g;
+    buf[i++] = b;
   }
 
   return buf;
