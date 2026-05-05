@@ -6,16 +6,20 @@
 |--------|-------|--------|---------|
 | `0` | 1 Byte | `gridLength` | `03` |
 | `1` | 1 Byte | `gridWidth` | `04` |
-| `2` | 1 Byte | Länge des `fieldLength`-Strings | `02` |
-| `3..N` | N Byte | `fieldLength` als UTF-8 | `31 30` → `"10"` |
-| `N+1` | 1 Byte | Länge des `fieldWidth`-Strings | `01` |
-| `N+2..M` | M Byte | `fieldWidth` als UTF-8 | `38` → `"8"` |
-| `M+1` | 1 Byte | Anzahl der gefärbten Zellen | `02` |
-| `M+2` | 1 Byte | cellId — Paar 1 | `05` |
-| `M+3` | 1 Byte | colorIdx — Paar 1 | `02` → Blau |
-| `M+4` | 1 Byte | cellId — Paar 2 | `0b` |
-| `M+5` | 1 Byte | colorIdx — Paar 2 | `07` → Schwarz |
-| `...` | ... | weitere cellId/colorIdx-Paare | |
+| `2` | 1 Byte | `fieldLength` | `0a` |
+| `3` | 1 Byte | `fieldWidth` | `08` |
+| `4` | 1 Byte | `startId` | `00` |
+| `5` | 1 Byte | `finishId` | `0b` |
+| `6` | 1 Byte | Anzahl der gefärbten Zellen | `02` |
+| `7` | 1 Byte | cellId — Paar 1 | `05` |
+| `8` | 1 Byte | colorR — Paar 1 | `00` |
+| `9` | 1 Byte | colorG — Paar 1 | `00` |
+| `10` | 1 Byte | colorB — Paar 1 | `ff` |
+| `11` | 1 Byte | cellId — Paar 2 | `0b` |
+| `12` | 1 Byte | colorR — Paar 2 | `00` |
+| `13` | 1 Byte | colorG — Paar 2 | `00` |
+| `14` | 1 Byte | colorB — Paar 2 | `00` |
+| `...` | ... | weitere cellId/RGB-Paare | |
 
 > Zellen die **keine** Farbe haben (Standardgrau) werden **nicht** übertragen.
 > Nur explizit eingefärbte Zellen landen als Paar im Byte-Array.
@@ -27,45 +31,51 @@
 **Eingabe:**
 - `gridLength = 3`
 - `gridWidth = 4`
-- `fieldLength = "10"`
-- `fieldWidth = "8"`
-- Zelle 5 → Blau (idx 2)
-- Zelle 11 → Schwarz (idx 7)
+- `fieldLength = 10`
+- `fieldWidth = 8`
+- `startId = 0`
+- `finishId = 11`
+- Zelle 5 → Blau (`#0000FF`)
+- Zelle 11 → Schwarz (`#000000`)
 
 **Hex-String im QR-Code:**
 ```
-03 04 02 31 30 01 38 02 05 02 0b 07
+03 04 0a 08 00 0b 02 05 00 00 ff 0b 00 00 00
 ```
 
 **Annotiert:**
 ```
 03        → gridLength = 3
 04        → gridWidth  = 4
-02        → fieldLength hat 2 Zeichen
-31 30     → "10"
-01        → fieldWidth hat 1 Zeichen
-38        → "8"
+0a        → fieldLength = 10
+08        → fieldWidth  = 8
+00        → startId = 0
+0b        → finishId = 11
 02        → 2 Zellen sind eingefärbt
-05 02     → Zelle  5 = colorIdx 2 (Blau)
-0b 07     → Zelle 11 = colorIdx 7 (Schwarz)
+05 00 00 ff → Zelle  5 = #0000FF (Blau)
+0b 00 00 00 → Zelle 11 = #000000 (Schwarz)
 ```
 
 ---
 
-## Farb-Lookup-Table (LUT)
+## Default-Palette (UI)
 
-| Index (Byte) | Name | Hex-Farbe |
-|:---:|---|---|
-| `0` | Rot | `#FF0000` |
-| `1` | Grün | `#00FF00` |
-| `2` | Blau | `#0000FF` |
-| `3` | Gelb | `#FFFF00` |
-| `4` | Cyan | `#00FFFF` |
-| `5` | Magenta | `#FF00FF` |
-| `6` | Weiß | `#FFFFFF` |
-| `7` | Schwarz | `#000000` |
-| `8` | Orange | `#FF8000` |
-| `9` | Lila | `#8000FF` |
+Die UI bietet eine feste Palette, die in die QR-Payload als RGB-Werte geschrieben wird:
+
+| Name | Hex-Farbe |
+|---|---|
+| Rot | `#FF0000` |
+| Grün | `#00FF00` |
+| Blau | `#0000FF` |
+| Gelb | `#FFFF00` |
+| Cyan | `#00FFFF` |
+| Magenta | `#FF00FF` |
+| Weiß | `#FFFFFF` |
+| Schwarz | `#000000` |
+| Orange | `#FF8000` |
+| Lila | `#8000FF` |
+
+Hinweis: Intern wird pro Zelle nur der Paletten-Index gespeichert; beim Export wird der Index auf RGB abgebildet.
 
 ---
 
@@ -74,9 +84,10 @@
 | Feld | Max. Wert | Grund |
 |---|---|---|
 | `gridLength` / `gridWidth` | 255 | uint8 |
-| `fieldLength` / `fieldWidth` String | 255 Zeichen | Längenbyte ist uint8 |
+| `fieldLength` / `fieldWidth` | 255 | uint8 |
+| `startId` / `finishId` | 255 | uint8 |
 | Anzahl Zellen | 255 | uint8 |
-| colorIdx | 9 | LUT hat 10 Einträge (0–9) |
+| Farbkanäle `R/G/B` | 255 | uint8 |
 
 > Bei Arenen über 255×255 Felder müssten `gridLength`/`gridWidth`
 > auf **uint16** (2 Byte, Big-Endian) umgestellt werden.
