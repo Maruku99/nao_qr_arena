@@ -40,7 +40,8 @@ const emit = defineEmits<{
 
 const rectsCanvas = computed(() =>
   Array.from({ length: gridWidth.value * gridLength.value }, (_, index) => {
-    const fillColor = COLOR_LUT[cellColors.value.get(index) ?? -1]?.hex ?? "#cccccc";
+    const colorIdx = cellColors.value[index] ?? -1;
+    const fillColor = COLOR_LUT[colorIdx]?.hex ?? "#cccccc";
     return {
       id: index,
       stage: { width: stageSize.width, height: stageSize.height },
