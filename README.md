@@ -77,19 +77,26 @@ npm run type-check
 
 ## QR-Payload
 
-Der QR-Code enthält die Arena-Daten als JSON mit:
+Der QR-Code enthält die Arena-Daten als Hex-String (Byte-Array) mit:
 
 - gridLength
 - gridWidth
 - fieldLength
 - fieldWidth
-- cellColors (als Objekt mit Zell-ID als Key)
+- startId
+- finishId
+- Anzahl der gefärbten Zellen
+- Zellen als Paare: cellId + RGB (3 Byte)
+
+Hinweis: Intern speichert die UI pro Zelle nur den Paletten-Index; im QR landen die Farben immer als RGB-Bytes.
+
+Details siehe [QrCodeInterpretation.md](QrCodeInterpretation.md).
 
 ## Projektstruktur
 
 - src/App.vue: Hauptlayout und Theme-Toggle
 - src/components/ArenaGrid.vue: Raster, Zellfarben, Picker-Interaktion
-- src/components/ArenaFieldSize.vue: Feldmaße pro Zelle
+- src/components/NumberInput.vue: Eingabefeld für Zahlen
 - src/components/QrButton.vue: QR-Code-Erzeugung und Dialog
 - src/stores/useArenaStore.ts: Gemeinsamer State (Größe, Maße, Farben)
 
