@@ -12,14 +12,10 @@
 | `5` | 1 Byte | `finishId` | `0b` |
 | `6` | 1 Byte | Anzahl der gefärbten Zellen | `02` |
 | `7` | 1 Byte | cellId — Paar 1 | `05` |
-| `8` | 1 Byte | colorR — Paar 1 | `00` |
-| `9` | 1 Byte | colorG — Paar 1 | `00` |
-| `10` | 1 Byte | colorB — Paar 1 | `ff` |
-| `11` | 1 Byte | cellId — Paar 2 | `0b` |
-| `12` | 1 Byte | colorR — Paar 2 | `00` |
-| `13` | 1 Byte | colorG — Paar 2 | `00` |
-| `14` | 1 Byte | colorB — Paar 2 | `00` |
-| `...` | ... | weitere cellId/RGB-Paare | |
+| `8` | 1 Byte | lutIdx — Paar 1 | `02` |
+| `9` | 1 Byte | cellId — Paar 2 | `0b` |
+| `10` | 1 Byte | lutIdx — Paar 2 | `07` |
+| `...` | ... | weitere cellId/LUT-Paare | |
 
 > Zellen die **keine** Farbe haben (Standardgrau) werden **nicht** übertragen.
 > Nur explizit eingefärbte Zellen landen als Paar im Byte-Array.
@@ -35,12 +31,12 @@
 - `fieldWidth = 8`
 - `startId = 0`
 - `finishId = 11`
-- Zelle 5 → Blau (`#0000FF`)
-- Zelle 11 → Schwarz (`#000000`)
+- Zelle 5 → Blau (LUT-Index 2)
+- Zelle 11 → Hindernis (LUT-Index 7)
 
 **Hex-String im QR-Code:**
 ```
-03 04 0a 08 00 0b 02 05 00 00 ff 0b 00 00 00
+03 04 0a 08 00 0b 02 05 02 0b 07
 ```
 
 **Annotiert:**
@@ -52,30 +48,29 @@
 00        → startId = 0
 0b        → finishId = 11
 02        → 2 Zellen sind eingefärbt
-05 00 00 ff → Zelle  5 = #0000FF (Blau)
-0b 00 00 00 → Zelle 11 = #000000 (Schwarz)
+05 02     → Zelle 5 = LUT-Index 2 (Blau)
+0b 07     → Zelle 11 = LUT-Index 7 (Hindernis)
 ```
 
 ---
 
-## Default-Palette (UI)
+## COLOR_LUT (Farb-Lookup-Tabelle)
 
-Die UI bietet eine feste Palette, die in die QR-Payload als RGB-Werte geschrieben wird:
+| Index | Name      | Farbe   |
+|-------|-----------|---------|
+| 0     | Rot       | #FF0000 |
+| 1     | Grün      | #00FF00 |
+| 2     | Blau      | #0000FF |
+| 3     | Gelb      | #FFFF00 |
+| 4     | Cyan      | #00FFFF |
+| 5     | Magenta   | #FF00FF |
+| 6     | Weiß      | #FFFFFF |
+| 7     | Violet    | #9D3368 |
+| 8     | Orange    | #FF8000 |
+| 9     | Lila      | #8000FF |
+| 10    | Hindernis | #000000 |
 
-| Name | Hex-Farbe |
-|---|---|
-| Rot | `#FF0000` |
-| Grün | `#00FF00` |
-| Blau | `#0000FF` |
-| Gelb | `#FFFF00` |
-| Cyan | `#00FFFF` |
-| Magenta | `#FF00FF` |
-| Weiß | `#FFFFFF` |
-| Schwarz | `#000000` |
-| Orange | `#FF8000` |
-| Lila | `#8000FF` |
-
-Hinweis: Intern wird pro Zelle nur der Paletten-Index gespeichert; beim Export wird der Index auf RGB abgebildet.
+Hinweis: Index 10 repräsentiert Hindernisse auf dem Spielfeld.
 
 ---
 
@@ -87,7 +82,8 @@ Hinweis: Intern wird pro Zelle nur der Paletten-Index gespeichert; beim Export w
 | `fieldLength` / `fieldWidth` | 255 | uint8 |
 | `startId` / `finishId` | 255 | uint8 |
 | Anzahl Zellen | 255 | uint8 |
-| Farbkanäle `R/G/B` | 255 | uint8 |
+| `cellId` | 255 | uint8 |
+| `lutIdx` | 255 | uint8 |
 
 > Bei Arenen über 255×255 Felder müssten `gridLength`/`gridWidth`
 > auf **uint16** (2 Byte, Big-Endian) umgestellt werden.
@@ -114,4 +110,27 @@ std::vector<uint8_t> hexDecode(const std::string& hex) {
     }
     return out;
 }
+```
+
+### C++ LUT-Nutzung
+```cpp
+// LUT-Array für Farben
+static const uint32_t COLOR_LUT[] = {
+    0xFF0000, // 0: Rot
+    0x00FF00, // 1: Grün
+    0x0000FF, // 2: Blau
+    0xFFFF00, // 3: Gelb
+    0x00FFFF, // 4: Cyan
+    0xFF00FF, // 5: Magenta
+    0xFFFFFF, // 6: Weiß
+    0x9D3368, // 7: Violet
+    0xFF8000, // 8: Orange
+    0x8000FF, // 9: Lila
+    0x000000, // 10: Hindernis
+};
+
+uint32_t color = COLOR_LUT[lutIdx];
+uint8_t r = (color >> 16) & 0xFF;
+uint8_t g = (color >> 8) & 0xFF;
+uint8_t b = color & 0xFF;
 ```

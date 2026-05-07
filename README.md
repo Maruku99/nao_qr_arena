@@ -86,11 +86,27 @@ Der QR-Code enthält die Arena-Daten als Hex-String (Byte-Array) mit:
 - startId
 - finishId
 - Anzahl der gefärbten Zellen
-- Zellen als Paare: cellId + RGB (3 Byte)
-
-Hinweis: Intern speichert die UI pro Zelle nur den Paletten-Index; im QR landen die Farben immer als RGB-Bytes.
+- Zellen als Paare: cellId + LUT-Index (2 Byte)
 
 Details siehe [QrCodeInterpretation.md](QrCodeInterpretation.md).
+
+## COLOR_LUT (Farb-Lookup-Tabelle)
+
+| Index | Name      | Farbe   |
+|-------|-----------|---------|
+| 0     | Rot       | #FF0000 |
+| 1     | Grün      | #00FF00 |
+| 2     | Blau      | #0000FF |
+| 3     | Gelb      | #FFFF00 |
+| 4     | Cyan      | #00FFFF |
+| 5     | Magenta   | #FF00FF |
+| 6     | Weiß      | #FFFFFF |
+| 7     | Violet    | #9D3368 |
+| 8     | Orange    | #FF8000 |
+| 9     | Lila      | #8000FF |
+| 10    | Hindernis | #000000 |
+
+Hinweis: Index 10 repräsentiert Hindernisse auf dem Spielfeld.
 
 ## Projektstruktur
 
