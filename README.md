@@ -3,7 +3,6 @@
 Web-App zum Erstellen eines Arena-Rasters für NAO und zum Export der Konfiguration als QR-Code.
 
 ## Features
-
 - Frei einstellbare Arena-Größe (Zeilen x Spalten)
 - Feldmaße in cm (Länge/Breite pro Feld)
 - Farbzuweisung pro Zelle
@@ -101,7 +100,7 @@ Details siehe [QrCodeInterpretation.md](QrCodeInterpretation.md).
 | 4     | Cyan      | #00FFFF |
 | 5     | Magenta   | #FF00FF |
 | 6     | Weiß      | #FFFFFF |
-| 7     | Violet    | #9D3368 |
+| 7     | Magenta-Rot    | #9D3368 |
 | 8     | Orange    | #FF8000 |
 | 9     | Lila      | #8000FF |
 | 10    | Hindernis | #000000 |
