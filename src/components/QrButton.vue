@@ -50,13 +50,6 @@ const {
 const showQr = ref(false);
 
 function buildByteArray(): Uint8Array {
-  const cells: Array<[number, number]> = [];
-  for (let id = 0; id < cellColors.value.length; id++) {
-    const idx = cellColors.value[id];
-    if (idx !== undefined && idx >= 0) {
-      cells.push([id, idx]);
-    }
-  }
   const values = [
     gridLength.value,
     gridWidth.value,
@@ -66,31 +59,22 @@ function buildByteArray(): Uint8Array {
     finishId.value,
   ];
 
-  const size = values.length + 1 + cells.length * 2; // +1 für cells.length Byte, +2 für cellId + lutIdx
+  const cellCount = gridLength.value * gridWidth.value;
+  const size = values.length + cellCount;
   const buf = new Uint8Array(size);
 
-  // Values schreiben (Index 0 bis values.length-1)
   for (let index = 0; index < values.length; index++) {
     buf[index] = values[index];
   }
 
-  // Anzahl Zellen direkt nach den values
   let i = values.length;
-  buf[i++] = cells.length;
-
-  // Zell-Paare (cellId + lutIdx)
-  for (const [cellId, lutIdx] of cells) {
-    buf[i++] = cellId;
-    buf[i++] = lutIdx;
+  for (let id = 0; id < cellCount; id++) {
+    const idx = cellColors.value[id] ?? 0;
+    buf[i++] = idx;
   }
 
   return buf;
 }
-
-// const qrValues = computed(() => {
-//   const bytes = buildByteArray();
-//   return bytes.toString();
-// });
 
 const qrValues = computed(() => {
   const bytes = buildByteArray()
