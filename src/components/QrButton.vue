@@ -49,15 +49,6 @@ const {
 
 const showQr = ref(false);
 
-function hexToRgbBytes(hex: string): [number, number, number] {
-  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
-  if (clean.length !== 6) return [0, 0, 0];
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  return [r, g, b];
-}
-
 function buildByteArray(): Uint8Array {
   const cells: Array<[number, number]> = [];
   for (let id = 0; id < cellColors.value.length; id++) {
@@ -75,7 +66,7 @@ function buildByteArray(): Uint8Array {
     finishId.value,
   ];
 
-  const size = values.length + 1 + cells.length * 4; // +1 für cells.length Byte
+  const size = values.length + 1 + cells.length * 2; // +1 für cells.length Byte, +2 für cellId + lutIdx
   const buf = new Uint8Array(size);
 
   // Values schreiben (Index 0 bis values.length-1)
@@ -87,14 +78,10 @@ function buildByteArray(): Uint8Array {
   let i = values.length;
   buf[i++] = cells.length;
 
-  // Zell-Paare
-  for (const [cellId, colorIdx] of cells) {
+  // Zell-Paare (cellId + lutIdx)
+  for (const [cellId, lutIdx] of cells) {
     buf[i++] = cellId;
-    const colorHex = COLOR_LUT[colorIdx]?.hex ?? "#000000";
-    const [r, g, b] = hexToRgbBytes(colorHex);
-    buf[i++] = r;
-    buf[i++] = g;
-    buf[i++] = b;
+    buf[i++] = lutIdx;
   }
 
   return buf;

@@ -17,9 +17,10 @@ const COLOR_LUT = [
   { idx: 4, name: 'Cyan',    hex: '#00FFFF' },
   { idx: 5, name: 'Magenta', hex: '#FF00FF' },
   { idx: 6, name: 'Weiß',    hex: '#FFFFFF' },
-  { idx: 7, name: 'Schwarz', hex: '#000000' },
+  { idx: 7, name: 'Violet', hex: '#9d3368' },
   { idx: 8, name: 'Orange',  hex: '#FF8000' },
   { idx: 9, name: 'Lila',    hex: '#8000FF' },
+  { idx: 10, name: 'Hindernis', hex: '#000000' },
 ]
 
 const DEFAULT_COLOR_IDX = -1
